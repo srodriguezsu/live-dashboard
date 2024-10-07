@@ -1,25 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from 'react';
+import LiveView from "./modules/LiveView";
+import Recordings from "./modules/Recordings";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+function GPSMap() {
+    const [activeModule, setActiveModule] = useState("live"); // State to manage the active module
+
+    const handleModuleChange = (module) => {
+        setActiveModule(module);
+    };
+    return(
+        <>
+            {/* Menu for switching between modules */}
+            <nav>
+                <button onClick={() => handleModuleChange("live")}>
+                    Live View
+                </button>
+                <button onClick={() => handleModuleChange("recordings")}>
+                    Recordings
+                </button>
+            </nav>
+            {activeModule === "recordings" ?<Recordings/> : <></>}
+            {activeModule === "live" ? <LiveView/> : <></>}
+
+        </>
+
+        )
+
 }
 
-export default App;
+export default GPSMap;
