@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import io from 'socket.io-client';
+import {Box, Button, Icon, Stack, Typography} from "@mui/material";
 
 // Connect to your WebSocket server
 const socket = io('https://telemetria-server.onrender.com');
@@ -51,39 +52,51 @@ const LiveView = () => {
     }, [isRecording, positions, recordings]);
 
     return (
-        <div>
-            <h1>GPS Tracker</h1>
-            <button onClick={() => setIsRecording(!isRecording)}>
+        <Stack sx={{alignItems:'center', gap:'40px'}}>
+            <Typography variant="h1">GPS Tracker</Typography>
+            <Button variant="contained" onClick={() => setIsRecording(!isRecording)} startIcon={<Icon> {isRecording ? 'radio_button_checked' : "radio_button_unchecked"} </Icon> }>
                 {isRecording ? 'Detener Grabación' : 'Iniciar Grabación'}
-            </button>
+            </Button>
+
             {currentPosition ? (
-                <h1>Velocidad: {currentPosition.speed} km/h</h1>
+                <>
+                    <Typography variant="h3">Velocidad: {currentPosition?.speed} km/h</Typography>
+                    <MapContainer
+                        center={currentPosition} // Center the map on the first position
+                        zoom={13}
+                        style={{ height: '500px', width: '100%' }}
+                    >
+                        <TileLayer
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                        />
+
+                        {/* Place a marker at the latest GPS position */}
+                        <Marker position={currentPosition} icon={customIcon}></Marker>
+
+                        {/* Draw a polyline to recreate the track */}
+                        <Polyline positions={positions.map(pos => [pos.lat, pos.lng])} color="blue" />
+                    </MapContainer>
+                </>
+
             ) : (
-                <h1>No hay información disponible</h1>
-            )}
-            {currentPosition ? (
-                <MapContainer
-                    center={currentPosition} // Center the map on the first position
-                    zoom={13}
-                    style={{ height: '500px', width: '100%' }}
-                >
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    />
+                <>
+                    <Typography variant="h3">No hay ubicación disponible.</Typography>
+                    <Box sx={{
+                        minHeight:'500px',
+                    }}>
+                        <Icon sx={{
+                            fontSize:"300px"
+                        }}>
+                            wifi_tethering_off
+                        </Icon>
+                    </Box>
+                </>
 
-                    {/* Place a marker at the latest GPS position */}
-                    <Marker position={currentPosition} icon={customIcon}></Marker>
-
-                    {/* Draw a polyline to recreate the track */}
-                    <Polyline positions={positions.map(pos => [pos.lat, pos.lng])} color="blue" />
-                </MapContainer>
-            ) : (
-                <h2>No hay información disponible.</h2>
             )}
 
 
-        </div>
+        </Stack>
     );
 };
 
