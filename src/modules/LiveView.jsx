@@ -12,6 +12,7 @@ const customIcon = new L.Icon({
     iconUrl: 'https://cdn.icon-icons.com/icons2/2248/PNG/512/go_kart_icon_136543.png',
     iconSize: [38, 38],
 });
+
 const LiveView = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [currentPosition, setCurrentPosition] = useState();
